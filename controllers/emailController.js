@@ -4,9 +4,9 @@ const transporter = require('../config/nodemailerConfig');
 const { validateEmailData } = require('../models/emailModel');
 
 const sendEmail = (req, res) => {
-  const { name, email, phone } = req.body;
+  const { name, email, phone, college, skills, experience, location, source } = req.body;
 
-  const validation = validateEmailData({ name, email, phone });
+  const validation = validateEmailData({ name, email, phone, college, skills, experience, location, source });
 
   if (!validation.valid) {
     return res.status(400).json({ message: validation.message });
@@ -18,7 +18,12 @@ const sendEmail = (req, res) => {
     subject: 'New Callback Request',
     text: `You have a new callback request from ${name}.
     Email: ${email}
-    Phone: ${phone}`,
+    Phone: ${phone}
+    College: ${college}
+    Skills: ${skills.join(', ')}
+    Experience: ${experience} years
+    Location: ${location}
+    Source: ${source}`,
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
