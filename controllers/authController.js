@@ -4,7 +4,7 @@ const User = require('../models/User');
 
 const generateToken = (user) => {
     return jwt.sign(
-        { id: user._id, name: user.name, email: user.email },
+        { id: user._id, name: user.name, email: user.email, number: user.number},
         process.env.JWT_SECRET,
         { expiresIn: '1h' }
     );
@@ -43,6 +43,7 @@ const registerUser = async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
+                number: user.number,
             },
         });
     } catch (error) {
@@ -79,6 +80,7 @@ const loginUser = async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
+                number: user.number,
             },
         });
     } catch (error) {

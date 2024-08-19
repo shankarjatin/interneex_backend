@@ -3,34 +3,21 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const UserSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    number: {
-        type: String,
-        required: true,
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-    courseBought: {
-        type: Boolean,
-        default: false,
-    },
-    courseDetail: {
-        type: mongoose.Schema.Types.Mixed,
-        default: null,
-    },
-}, {
-    timestamps: true,
-});
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    number: { type: String, required: true },
+    password: { type: String, required: true },
+    hasPurchasedCourse: { type: Boolean, default: false },
+    courseDetails: { 
+      type: {
+        courseName: String,
+        courseDuration: String,
+        purchaseDate: Date,
+        receiptId: String
+      }, 
+      default: null 
+    }
+  });
 
 // Encrypt the password before saving the user
 UserSchema.pre('save', async function(next) {
