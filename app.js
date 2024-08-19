@@ -8,8 +8,18 @@ require('dotenv').config();
 const emailRoutes = require('./routes/emailRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true,
+})
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.log(err));
 
-const app = express();
+// Middleware
+app.use(express.json());
+
 const port = process.env.PORT || 3001;
 
 // Middleware
