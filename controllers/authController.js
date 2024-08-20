@@ -51,6 +51,30 @@ const registerUser = async (req, res) => {
     }
 };
 
+const getUserInfo = async (req, res) => {
+    try {
+        const user = req.user; // User is set in the middleware
+        res.status(200).json({
+            success: true,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                number: user.number,
+                hasPurchasedCourse: user.hasPurchasedCourse,
+                courseDetails: user.courseDetails ? {
+                    courseName: user.courseDetails.courseName,
+                    courseDuration: user.courseDetails.courseDuration,
+                    purchaseDate: user.courseDetails.purchaseDate,
+                    receiptId: user.courseDetails.receiptId,
+                } : null,
+            },
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 // @desc    Login user
 // @route   POST /api/auth/login
 // @access  Public
@@ -91,4 +115,5 @@ const loginUser = async (req, res) => {
 module.exports = {
     registerUser,
     loginUser,
+    getUserInfo
 };
