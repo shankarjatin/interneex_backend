@@ -135,8 +135,8 @@ const forgotPassword = async (req, res) => {
         await user.save({ validateBeforeSave: false });
         console.log("Reset token generated:", resetToken);
 
-        // Create reset URL
-        const resetUrl = `${req.protocol}://${req.get('host')}/api/reset-password/${resetToken}`;
+        // Create reset URL pointing to React frontend
+        const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
         console.log("Reset URL:", resetUrl);
 
         // Email message
@@ -153,7 +153,6 @@ const forgotPassword = async (req, res) => {
         Modgenics Technology Solutions
     `;
     
-
         // Mail options
         const mailOptions = {
             from: 'sales@modgenics.co',
@@ -185,14 +184,19 @@ const forgotPassword = async (req, res) => {
 };
 
 
+
 // @desc    Reset password
 // @route   PUT /api/auth/reset-password/:token
 // @access  Public
 const resetPassword = async (req, res) => {
-    const { token } = req.params;
+    const { token } = req.query; // Get the token from the query parameters
     const { password } = req.body;
 
     try {
+        if (!token) {
+            return res.status(400).json({ message: 'Token is required' });
+        }
+
         // Hash the token and find the user
         const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
         const user = await User.findOne({
@@ -210,7 +214,7 @@ const resetPassword = async (req, res) => {
         user.resetPasswordExpires = undefined;
         await user.save();
 
-        // Generate token
+        // Generate new token for authentication after password reset
         const newToken = generateToken(user);
 
         res.status(200).json({
@@ -224,9 +228,11 @@ const resetPassword = async (req, res) => {
             },
         });
     } catch (error) {
+        console.error("Error during password reset:", error);
         res.status(500).json({ message: 'Server error' });
     }
 };
+
 
 
 module.exports = {
