@@ -4,6 +4,8 @@ const User = require('../models/User');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const transporter = require('../config/nodemailerConfig')
+const API_BASE_URL =  'http://localhost:3000';
+// const API_BASE_URL =  'https://interneex.com/';
 
 
 const generateToken = (user) => {
@@ -136,7 +138,7 @@ const forgotPassword = async (req, res) => {
         console.log("Reset token generated:", resetToken);
 
         // Create reset URL pointing to React frontend
-        const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+        const resetUrl = `${API_BASE_URL}/reset-password?token=${resetToken}`;
         console.log("Reset URL:", resetUrl);
 
         // Email message
