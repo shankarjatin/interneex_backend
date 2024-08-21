@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
-const User = require('../models/User');
 const transporter = require('../config/nodemailerConfig')
 
 
@@ -117,44 +116,74 @@ const loginUser = async (req, res) => {
     }
 };
 
-
 const forgotPassword = async (req, res) => {
     const { email } = req.body;
+    console.log("Email received for password reset:", email);
+
+    let user;
 
     try {
         // Check if user exists
-        const user = await User.findOne({ email });
+        user = await User.findOne({ email });
         if (!user) {
+            console.log("User not found");
             return res.status(404).json({ message: 'User not found' });
         }
 
         // Generate reset token
         const resetToken = user.createPasswordResetToken();
         await user.save({ validateBeforeSave: false });
+        console.log("Reset token generated:", resetToken);
 
         // Create reset URL
-        const resetUrl = `${req.protocol}://${req.get('host')}/api/auth/reset-password/${resetToken}`;
+        const resetUrl = `${req.protocol}://${req.get('host')}/api/reset-password/${resetToken}`;
+        console.log("Reset URL:", resetUrl);
 
-        // Send email
-        const message = `You are receiving this email because you (or someone else) have requested the reset of a password. Please make a put request to: \n\n ${resetUrl}`;
+        // Email message
+        const message = `
+        Dear User,
+    
+        You are receiving this email because you (or someone else) have requested the reset of a password. Please click on the following link to reset your password:
+    
+        ${resetUrl}
+    
+        If you did not request this, please ignore this email.
+    
+        Best regards,
+        Modgenics Technology Solutions
+    `;
+    
 
-   
-
-        await transporter.sendMail({
+        // Mail options
+        const mailOptions = {
+            from: 'sales@modgenics.co',
             to: user.email,
             subject: 'Password Reset Request',
             text: message,
+        };
+
+        // Send email
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.log("Error sending email:", error);
+                return res.status(500).json({ message: 'Failed to send email.' });
+            }
+            console.log("Email sent successfully:", info.response);
+            res.status(200).json({ message: 'Email sent successfully.' });
         });
-
-        res.status(200).json({ success: true, message: 'Email sent', resetUrl });
+        
     } catch (error) {
-        user.resetPasswordToken = undefined;
-        user.resetPasswordExpires = undefined;
-        await user.save({ validateBeforeSave: false });
+        console.error("Error during forgot password:", error);
 
+        if (user) {
+            user.resetPasswordToken = undefined;
+            user.resetPasswordExpires = undefined;
+            await user.save({ validateBeforeSave: false });
+        }
         res.status(500).json({ message: 'Server error' });
     }
 };
+
 
 // @desc    Reset password
 // @route   PUT /api/auth/reset-password/:token
