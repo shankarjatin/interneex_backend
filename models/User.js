@@ -16,7 +16,9 @@ const UserSchema = new mongoose.Schema({
         receiptId: String
       }, 
       default: null 
-    }
+    },
+    resetPasswordToken:{ type: String},
+    resetPasswordExpires: {type: Date},
   });
 
 // Encrypt the password before saving the user
@@ -32,6 +34,17 @@ UserSchema.pre('save', async function(next) {
 // Match user-entered password to hashed password in the database
 UserSchema.methods.matchPassword = async function(enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
+};
+UserSchema.methods.createPasswordResetToken = function() {
+  const resetToken = crypto.randomBytes(20).toString('hex');
+
+  // Hash the token and set it to resetPasswordToken field
+  this.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+  // Set the expiry date (e.g., 1 hour)
+  this.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+
+  return resetToken;
 };
 
 const User = mongoose.model('User', UserSchema);
