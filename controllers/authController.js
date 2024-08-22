@@ -154,7 +154,7 @@ const forgotPassword = async (req, res) => {
                 </p>
                 <p>If you did not request this, please ignore this email.</p>
                 <p>Best regards,</p>
-                <p>Modgenics Technology Solutions</p>
+                <p>Interneex</p>
             </div>
         </body>
         </html>
