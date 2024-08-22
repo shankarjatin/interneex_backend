@@ -11,6 +11,7 @@ const emailRoutes = require('./routes/emailRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const userRoutes = require('./routes/userRoutes');
 const privateRoute = require('./routes/privateRoute');
+const adminRoute = require('./routes/adminRoutes');
 
 
 
@@ -38,6 +39,7 @@ app.use('/api', emailRoutes);
 app.use('/api', paymentRoutes);
 app.use("/api", userRoutes);
 app.use('/api', privateRoute);
+app.use('/api', adminRoute);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
