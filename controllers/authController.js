@@ -141,26 +141,31 @@ const forgotPassword = async (req, res) => {
         const resetUrl = `${API_BASE_URL}/reset-password?token=${resetToken}`;
         console.log("Reset URL:", resetUrl);
 
-        // Email message
+        // HTML Email template
         const message = `
-        Dear User,
-    
-        You are receiving this email because you (or someone else) have requested the reset of a password. Please click on the following link to reset your password:
-    
-        ${resetUrl}
-    
-        If you did not request this, please ignore this email.
-    
-        Best regards,
-        Modgenics Technology Solutions
-    `;
-    
+        <html>
+        <body style="font-family: Arial, sans-serif; background-color: #0E0E0E; color: #ffffff; margin: 0; padding: 20px;">
+            <div style="max-width: 600px; margin: auto; background-color: #151515; padding: 20px; border-radius: 10px;">
+                <h1 style="color: #FF66FF; text-align: center;">Password Reset Request</h1>
+                <p>Dear User,</p>
+                <p>You are receiving this email because you (or someone else) have requested the reset of a password. Please click on the button below to reset your password:</p>
+                <p style="text-align: center;">
+                    <a href="${resetUrl}" style="background-color: #FF66FF; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Reset Password</a>
+                </p>
+                <p>If you did not request this, please ignore this email.</p>
+                <p>Best regards,</p>
+                <p>Modgenics Technology Solutions</p>
+            </div>
+        </body>
+        </html>
+        `;
+
         // Mail options
         const mailOptions = {
             from: 'sales@modgenics.co',
             to: user.email,
             subject: 'Password Reset Request',
-            text: message,
+            html: message,
         };
 
         // Send email
